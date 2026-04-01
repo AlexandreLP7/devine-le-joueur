@@ -1,0 +1,93 @@
+<div class="main-wrapper"> 
+  <div class="game-card">
+    
+    <div class="card-header">
+      <span class="soccer-ball">⚽</span>
+      <h1 class="game-title">Who Is It?</h1>
+    </div>
+
+    <div class="card-body">
+      
+      <div class="start-action" *ngIf="!gameState || gameState.gameOver">
+        <button class="btn-primary start-btn" (click)="onStart()">
+          {{ gameState?.gameOver ? '🔄 Rejouer' : '🚀 Commencer la partie' }}
+        </button>
+      </div>
+
+      <div *ngIf="gameState" class="game-area">
+        <h3 class="status-message" [class.win]="gameState.win">{{ gameState.message }}</h3>
+        
+        <div class="hint-container">
+          <p class="hint-text">{{ gameState.hint }}</p>
+        </div>
+
+        <div *ngIf="gameState.gameOver" class="result-display">
+        <div class="final-photo-container">
+          <img 
+            *ngIf="gameState.playerId"
+            [src]="'https://images.fotmob.com/image_resources/playerimages/' + gameState.playerId + '.png'" 
+            alt="Photo de {{ getCorrectPlayerName() }}"
+            class="final-photo-circle"
+            (error)="handleImageError($event)">
+        </div>
+    </div>
+
+        <div *ngIf="!gameState.gameOver" class="interaction-area">
+          <form class="guess-form" (ngSubmit)="onGuess(playerName.value); playerName.value=''; showSuggestions = false">
+            <div class="input-wrapper">
+              <input 
+                #playerName
+                type="text" 
+                class="guess-input"
+                placeholder="Devine le joueur de Liverpool..."
+                (input)="filterPlayers($event)"
+                autocomplete="off">
+              
+              <ul class="suggestions-list" *ngIf="showSuggestions && filteredNames.length > 0">
+                <li *ngFor="let name of filteredNames" (mousedown)="selectName(name, playerName)">
+                  {{ name }}
+                </li>
+              </ul>
+            </div>
+
+            <button type="submit" class="btn-primary valider-btn">
+              Valider
+            </button>
+          </form>
+
+          <div class="secondary-action" style="margin-top: 15px; display: flex; justify-content: center;">
+            <button type="button" class="btn-secondary" (click)="onStart()" 
+                    style="background-color: #6c757d; color: white; border: none; padding: 10px 25px; border-radius: 25px; cursor: pointer; font-weight: 600; transition: background-color 0.3s;">
+              🏳️ Abandonner / Rejouer
+            </button>
+          </div>
+          
+          <p class="attempts-counter" style="margin-top: 15px;">
+            Tentative : <strong>{{ gameState.currentStep }}</strong> / 4
+          </p>
+        </div>
+      </div>
+      <div class="history-container" *ngIf="history.length > 0">
+      <h3>📜 10 Derniers Joueurs</h3>
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Joueur</th>
+            <th>Résultat</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let game of history">
+            <td>{{ game.name }}</td>
+            <td>
+              <span [class.status-win]="game.win" [class.status-loss]="!game.win">
+                {{ game.win ? '✅ Trouvé' : '❌ Échec' }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    </div>
+  </div>
+</div>
