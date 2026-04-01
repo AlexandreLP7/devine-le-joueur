@@ -38,7 +38,6 @@ public class FootballApiService {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(jsonResponse);
             
-            // On descend dans l'arborescence : response -> list -> squad
             JsonNode squadNode = root.path("response").path("list").path("squad");
 
             List<Player> playersToSave = new ArrayList<>();
@@ -46,12 +45,10 @@ public class FootballApiService {
             for (JsonNode group : squadNode) {
                 String title = group.path("title").asText();
 
-                // 🛑 CONDITION : On ignore le groupe "coach"
                 if ("coach".equalsIgnoreCase(title)) {
                     continue;
                 }
 
-                // On boucle sur les membres du groupe (keepers, defenders, etc.)
                 JsonNode members = group.path("members");
                 for (JsonNode m : members) {
                     Player player = new Player();
@@ -59,7 +56,6 @@ public class FootballApiService {
                     player.setName(m.path("name").asText());
                     player.setNationality(m.path("cname").asText()); // Utilise cname pour le nom complet du pays
                     
-                    // On utilise le titre du groupe pour la position (ex: keepers -> Gardien)
                     player.setPosition(translatePosition(title));
                     
                     player.setClub("Liverpool");

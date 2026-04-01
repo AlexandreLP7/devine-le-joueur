@@ -4,7 +4,6 @@ import com.whoareyou.demo.model.Player;
 import com.whoareyou.demo.model.GameResponse;
 import com.whoareyou.demo.repository.PlayerRepository;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,7 +18,6 @@ public class GameController {
 
     private final PlayerRepository playerRepository;
     
-    // Pour simplifier pour ton projet solo, on garde ces variables ici.
     private Player targetPlayer; 
     private int step = 1;
 
@@ -54,7 +52,6 @@ public class GameController {
             return new GameResponse("Erreur", "Veuillez démarrer une partie.", 0, true, false,targetPlayer.getId());
         }
 
-        // 1. Vérification de la victoire
         if (name.trim().equalsIgnoreCase(targetPlayer.getName())) {
             String fullName = targetPlayer.getName();
             Long savedId = targetPlayer.getId(); // On sauvegarde l'ID AVANT le reset
@@ -63,7 +60,6 @@ public class GameController {
             return new GameResponse("BRAVO !", "C'était bien " + fullName, step, true, true, savedId);
         }
 
-        // 2. Gestion de l'échec et passage à l'indice suivant
         this.step++;
 
         if (step == 2) {
@@ -73,11 +69,10 @@ public class GameController {
         } else if (step == 4) {
             return new GameResponse("Dernière chance !", "Indice 4 (Club) : " + targetPlayer.getClub(), 4, false, false,targetPlayer.getId());
         } else {
-            // Étape 5 = Perdu
             String correctName = targetPlayer.getName();
             Long savedId = targetPlayer.getId();
             addToHistory(correctName, false);
-            targetPlayer = null; // Reset
+            targetPlayer = null; 
             return new GameResponse("PERDU !", "Le joueur était : " + correctName, 5, true, false,savedId);
         }
     }
@@ -86,8 +81,8 @@ public class GameController {
     public List<String> getAllPlayerNames() {
         return playerRepository.findAll().stream()
                 .map(Player::getName)
-                .distinct() // Évite les doublons au cas où
-                .sorted()   // Trie par ordre alphabétique
+                .distinct()
+                .sorted() 
                 .collect(Collectors.toList());
     }
 
@@ -95,9 +90,9 @@ public class GameController {
         Map<String, Object> entry = new HashMap<>();
         entry.put("name", name);
         entry.put("win", win);
-        gameHistory.add(0, entry); // Ajoute au début pour avoir le plus récent en haut
+        gameHistory.add(0, entry);
         if (gameHistory.size() > 10) {
-            gameHistory.remove(10); // Garde seulement les 10 derniers
+            gameHistory.remove(10);
         }
     }
 
