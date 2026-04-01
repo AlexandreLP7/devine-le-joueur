@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { GameService, GameResponse } from './services/game.service'; 
 
-import { Component, ChangeDetectorRef } from '@angular/core'; // Ajoute ChangeDetectorRef
+import { Component, ChangeDetectorRef } from '@angular/core';
 
 declare var confetti: any;
 
@@ -15,10 +15,10 @@ declare var confetti: any;
 })
 export class AppComponent {
   gameState: GameResponse | null = null;
-  allPlayerNames: string[] = [];      // Liste complète venant du back
-  filteredNames: string[] = [];       // Liste filtrée à afficher
+  allPlayerNames: string[] = [];
+  filteredNames: string[] = [];
   showSuggestions: boolean = false;
-  history: any[] = []; // Ajoute cette variable
+  history: any[] = [];
   
 
   constructor(private gameService: GameService, private cdr: ChangeDetectorRef) {}
@@ -44,10 +44,9 @@ export class AppComponent {
     });
   }
 
-  // Fonction pour filtrer la liste pendant la saisie
   filterPlayers(event: any) {
     const query = event.target.value.toLowerCase();
-    if (query.length > 1) { // On commence à suggérer après 2 caractères
+    if (query.length > 1) {
       this.filteredNames = this.allPlayerNames.filter(name => 
         name.toLowerCase().includes(query)
       );
@@ -58,10 +57,10 @@ export class AppComponent {
   }
 
   selectName(name: string, inputElement: HTMLInputElement) {
-    inputElement.value = name; // Remplit l'input
+    inputElement.value = name;
     this.showSuggestions = false;
-    this.onGuess(name); // Envoie directement la réponse
-    inputElement.value = ''; // Vide l'input après l'envoi
+    this.onGuess(name);
+    inputElement.value = '';
   }
 
   onGuess(name: string) {
@@ -79,7 +78,7 @@ export class AppComponent {
               particleCount: 150,
               spread: 70,
               origin: { y: 0.6 },
-              colors: ['#C8102E', '#ffffff', '#00B2A9'] // Couleurs de Liverpool !
+              colors: ['#C8102E', '#ffffff', '#00B2A9']
             });
           }
           else{
@@ -96,17 +95,11 @@ export class AppComponent {
 
   getCorrectPlayerName(): string {
     if (!this.gameState || !this.allPlayerNames) return '';
-    // Puisqu'on ne renvoie pas le nom complet du joueur final dans GameResponse,
-    // on peut soit l'ajouter au GameResponse côté Back,
-    // soit le deviner en espérant que la réponse précédente l'avait.
-    // La méthode la plus sûre est de l'AJOUTER dans GameResponse.java.
-    return this.gameState.message.split(': ')[1] || ''; // Extrait le nom si le message est "C'était : Salah"
+    return this.gameState.message.split(': ')[1] || '';
   }
 
   handleImageError(event: any) {
-    // Image générique si le joueur n'est pas trouvé sur FotMob
     event.target.src = 'https://images.fotmob.com/image_resources/playerimages/unknown.png';
-    // Ou simplement masquer l'image : event.target.style.display = 'none';
   }
 
   playAudio(type: 'success' | 'fail') {

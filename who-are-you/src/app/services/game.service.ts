@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
-// On définit une interface pour correspondre au GameResponse.java du Backend
 export interface GameResponse {
   message: string;
   hint: string;
